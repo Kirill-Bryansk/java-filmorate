@@ -15,17 +15,17 @@ public class User {
     private Integer id;
 
     @NotBlank(message = "Email не может быть пустым")
-    @Email(message = "Некорректный email (должен содержать @)")
+    @Email(message = "Некорректный формат email (должен содержать @)")
     private String email;
 
     @NotBlank(message = "Логин не может быть пустым")
-    @Pattern(regexp = "^[^\\s]+$", message = "Логин должен быть без пробелов")
+    @Pattern(regexp = "^[^\\s]+$", message = "Логин не должен содержать пробелы")
     private String login;
 
     private String name;
 
-    @NotNull(message = "Укажи дату рождения")
-    @PastOrPresent(message = "Некорректная дата рождения")
+    @NotNull(message = "Дата рождения обязательна")
+    @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
     private final Set<Integer> friends = new HashSet<>();
