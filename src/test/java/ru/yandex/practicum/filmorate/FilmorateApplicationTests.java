@@ -107,7 +107,7 @@ class FilmorateApplicationTests {
 
 		assertThat(films).hasSize(3);
 		assertThat(films).extracting(Film::getName)
-				.containsExactlyInAnyOrder("Inception", "The Notebook", "Interstellar");
+				.containsExactlyInAnyOrder("The Matrix", "Avatar", "Inception");
 	}
 
 	@Test
@@ -115,8 +115,8 @@ class FilmorateApplicationTests {
 		Film film = filmStorage.getFilmById(1);
 
 		assertThat(film).isNotNull();
-		assertThat(film.getName()).isEqualTo("Inception");
-		assertThat(film.getDescription()).isEqualTo("A mind-bending thriller by Christopher Nolan.");
+		assertThat(film.getName()).isEqualTo("The Matrix");
+		assertThat(film.getDescription()).isEqualTo("A science fiction action film about a dystopian future where reality is a simulation.");
 	}
 
 
