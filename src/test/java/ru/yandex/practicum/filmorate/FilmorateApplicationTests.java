@@ -49,12 +49,12 @@ class FilmorateApplicationTests {
 		Film avatar = new Film(2, "Avatar", "A visually stunning science fiction epic set on the alien moon Pandora.",
 				LocalDate.of(2009, 12, 18), 162, new HashSet<>(), mpaStorage.getMpaById(4), new LinkedHashSet<>());
 
-		Film Inception = new Film(3, "Inception", "A psychological sci-fi thriller about dream infiltration.",
+		Film inception = new Film(3, "Inception", "A psychological sci-fi thriller about dream infiltration.",
 				LocalDate.of(2010, 7, 16), 148, new HashSet<>(), mpaStorage.getMpaById(4), new LinkedHashSet<>());
 
 		filmStorage.addFilm(matrix);
 		filmStorage.addFilm(avatar);
-		filmStorage.addFilm(Inception);
+		filmStorage.addFilm(inception);
 
 		int id = userStorage.getAllUsers().getFirst().getId();
 		userStorage.addFriend(id, id + 1);
