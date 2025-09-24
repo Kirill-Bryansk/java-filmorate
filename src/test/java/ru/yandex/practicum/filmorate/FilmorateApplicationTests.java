@@ -12,10 +12,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.MpaDbStorage;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.repository.jdbc.FilmDbStorage;
+import ru.yandex.practicum.filmorate.repository.jdbc.GenreDbStorage;
+import ru.yandex.practicum.filmorate.repository.jdbc.MpaDbStorage;
+import ru.yandex.practicum.filmorate.repository.jdbc.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.*;
