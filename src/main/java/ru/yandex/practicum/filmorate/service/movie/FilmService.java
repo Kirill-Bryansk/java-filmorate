@@ -1,20 +1,27 @@
 package ru.yandex.practicum.filmorate.service.movie;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.repository.users.UserStorageInterface;
+import ru.yandex.practicum.filmorate.service.users.UserServiceInterface;
 
 import java.util.*;
 
 
 @Service
-@RequiredArgsConstructor
 public class FilmService implements FilmServiceInterface {
+    @Autowired
     private final FilmServiceInterface filmStorage;
-    private final UserStorageInterface userStorage;
 
+    @Autowired
+    @Qualifier("userDbStorage")
+    private final UserServiceInterface userStorage;
+
+    public FilmService(FilmServiceInterface filmStorage, UserServiceInterface userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
     public ArrayList<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }

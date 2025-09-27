@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.users;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.repository.users.UserStorageInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+@RequiredArgsConstructor
+public class UserService implements UserServiceInterface {
 
-    private final UserStorageInterface userStorage;
-
-    public UserService(UserStorageInterface userStorage) {
-        this.userStorage = userStorage;
-    }
+    private final UserServiceInterface userStorage;
 
     public User addUser(User user) {
         return userStorage.addUser(user);
@@ -34,6 +32,11 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
+    @Override
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
+    }
+
     public void addFriend(int userId, int friendId) {
         validateUsersExist(userId, friendId);
         userStorage.addFriend(userId, friendId);
@@ -42,6 +45,11 @@ public class UserService {
     public void removeFriend(int userId, int friendId) {
         validateUsersExist(userId, friendId);
         userStorage.removeFriend(userId, friendId);
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        userStorage.deleteAllUsers();
     }
 
     public Set<User> getFriends(int userId) {

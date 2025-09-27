@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.repository.users;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.users.UserServiceInterface;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,14 +23,11 @@ import static ru.yandex.practicum.filmorate.repository.friendship.FriendshipSqlC
 import static ru.yandex.practicum.filmorate.repository.users.UsersSqlConstants.*;
 
 @Component
-public class UserDbStorage implements UserStorageInterface {
+@Primary // Для использования единственного экземпляра в FilmService и UserService
+@RequiredArgsConstructor
+public class UserDbStorage implements UserServiceInterface {
 
     private final JdbcTemplate jdbc;
-
-    public UserDbStorage(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
-
 
     @Override
     public User addUser(User user) {
