@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.repository.like.LikeDbStorage;
 import ru.yandex.practicum.filmorate.service.users.UserServiceInterface;
 
 import java.util.*;
@@ -14,12 +15,15 @@ public class FilmService implements FilmServiceInterface {
     @Autowired
     private final FilmServiceInterface filmStorage;
 
+    private final LikeDbStorage likeDbStorage;
+
     @Autowired
     @Qualifier("userDbStorage")
     private final UserServiceInterface userStorage;
 
-    public FilmService(FilmServiceInterface filmStorage, UserServiceInterface userStorage) {
+    public FilmService(FilmServiceInterface filmStorage, LikeDbStorage likeDbStorage, UserServiceInterface userStorage) {
         this.filmStorage = filmStorage;
+        this.likeDbStorage = likeDbStorage;
         this.userStorage = userStorage;
     }
     public ArrayList<Film> getAllFilms() {
@@ -40,12 +44,12 @@ public class FilmService implements FilmServiceInterface {
 
     public void addLike(int filmId, int userId) {
         validateFilmAndUser(filmId, userId);
-        filmStorage.addLike(filmId, userId);
+        likeDbStorage.addLike(filmId, userId);
     }
 
     public void removeLike(int filmId, int userId) {
         validateFilmAndUser(filmId, userId);
-        filmStorage.removeLike(filmId, userId);
+        likeDbStorage.removeLike(filmId, userId);
     }
 
     public List<Film> getPopularFilms(int count) {

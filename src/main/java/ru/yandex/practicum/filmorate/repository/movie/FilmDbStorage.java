@@ -30,7 +30,6 @@ import static ru.yandex.practicum.filmorate.repository.rating.RatingSqlConstants
 @Component
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmServiceInterface {
-
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
 
@@ -167,16 +166,6 @@ public class FilmDbStorage implements FilmServiceInterface {
         jdbc.update(DELETE_ALL_LIKES_SQL);
         jdbc.update(DELETE_ALL_GENRES_SQL);
         jdbc.update(DELETE_ALL_MOVIES_SQL);
-    }
-
-    @Override
-    public void addLike(int filmId, int userId) {
-        jdbc.update(ADD_LIKE_SQL, filmId, userId);
-    }
-
-    @Override
-    public void removeLike(int filmId, int userId) {
-        jdbc.update(REMOVE_LIKE_SQL, filmId, userId);
     }
 
     @Override

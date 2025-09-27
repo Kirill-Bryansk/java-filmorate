@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service.users;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -64,7 +63,7 @@ public class UserService implements UserServiceInterface {
         Set<Integer> user2Friends = userStorage.getUserById(userId2).getFriends();
         List<Integer> commonFriends = user1Friends.stream()
                 .filter(user2Friends::contains)
-                .collect(Collectors.toList());
+                .toList();
 
         return commonFriends.stream()
                 .map(userStorage::getUserById)
