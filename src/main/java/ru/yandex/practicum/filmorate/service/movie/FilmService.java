@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.repository.movie.FilmStorageInterface;
 import ru.yandex.practicum.filmorate.repository.users.UserStorageInterface;
 
 import java.util.*;
@@ -14,7 +13,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FilmService implements FilmServiceInterface {
     @Autowired
-    private final FilmStorageInterface filmStorage;
+    private final FilmServiceInterface filmStorage;
     @Autowired // создает приватные поля
     private final UserStorageInterface userStorage;
 
@@ -46,6 +45,16 @@ public class FilmService implements FilmServiceInterface {
 
     public List<Film> getPopularFilms(int count) {
         return filmStorage.getPopularFilms(count);
+    }
+
+    @Override
+    public void deleteFilm(int id) {
+        filmStorage.deleteFilm(id);
+    }
+
+    @Override
+    public void deleteAllFilms() {
+        filmStorage.deleteAllFilms();
     }
 
     private void validateFilmAndUser(int filmId, int userId) {

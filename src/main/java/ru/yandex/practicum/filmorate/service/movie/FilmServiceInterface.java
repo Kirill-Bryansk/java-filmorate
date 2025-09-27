@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface FilmServiceInterface {
 
-
     ArrayList<Film> getAllFilms();
 
     Film getFilmById(int id);
@@ -20,4 +19,8 @@ public interface FilmServiceInterface {
     void removeLike(int filmId, int userId);
 
     List<Film> getPopularFilms(int count);
+
+    void deleteFilm(int id);
+
+    void deleteAllFilms();
 }

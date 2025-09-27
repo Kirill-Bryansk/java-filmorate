@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.movie.FilmServiceInterface;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -28,7 +29,7 @@ import static ru.yandex.practicum.filmorate.repository.rating.RatingSqlConstants
 
 @Component
 @RequiredArgsConstructor
-public class FilmDbStorage implements FilmStorageInterface {
+public class FilmDbStorage implements FilmServiceInterface {
 
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
