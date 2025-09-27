@@ -33,4 +33,10 @@ public class GenreSqlConstants {
     // SQL-запрос для удаления всех записей из таблицы genres
     public static final String DELETE_ALL_GENRES_SQL = "DELETE FROM genres";
 
+    // SQL-запрос для получения списка всех жанров из таблицы genres, упорядоченных по genre_id
+    public static final String GET_ALL_GENRES_SQL = "SELECT genre_id, name FROM genres ORDER BY genre_id";
+
+    // SQL-запрос для получения конкретного жанра по его идентификатору (genre_id) из таблицы genres
+    public static final String GET_GENRE_BY_ID_SQL = "SELECT genre_id, name FROM genres WHERE genre_id = ?";
+
 }

@@ -1,44 +1,38 @@
 package ru.yandex.practicum.filmorate.repository.genre;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mappers.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.genre.GenreServiceInterface;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.repository.genre.GenreSqlConstants.GET_ALL_GENRES_SQL;
+import static ru.yandex.practicum.filmorate.repository.genre.GenreSqlConstants.GET_GENRE_BY_ID_SQL;
+
 @Component
+@RequiredArgsConstructor
 public class GenreDbStorage implements GenreServiceInterface {
 
     private final JdbcTemplate jdbc;
-
-    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbc = jdbcTemplate;
-    }
+    private final GenreMapper genreMapper;
 
     @Override
     public List<Genre> getAllGenres() {
-        String sql = "SELECT genre_id, name FROM genres ORDER BY genre_id";
-        return jdbc.query(sql, this::mapRowToGenre);
+        return jdbc.query(GET_ALL_GENRES_SQL, genreMapper::mapRowToGenre);
     }
 
     @Override
     public Genre getGenreById(int id) {
-        String sql = "SELECT genre_id, name FROM genres WHERE genre_id = ?";
         try {
-            Genre genre = jdbc.queryForObject(sql, this::mapRowToGenre, id);
-            return genre;
+            return jdbc.queryForObject(GET_GENRE_BY_ID_SQL, genreMapper::mapRowToGenre, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Жанр с ID: " + id + " не найден");
         }
-    }
-
-    private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
-        return new Genre(rs.getInt("genre_id"), rs.getString("name"));
     }
 }
 

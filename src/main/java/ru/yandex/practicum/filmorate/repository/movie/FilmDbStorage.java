@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.repository.genre.GenreSqlConstants.*;
 import static ru.yandex.practicum.filmorate.repository.like.LikeSqlConstants.*;
-import static ru.yandex.practicum.filmorate.repository.movie.MovieGenreConstants.*;
+import static ru.yandex.practicum.filmorate.repository.movie.movie_ganre.MovieGenreConstants.*;
 import static ru.yandex.practicum.filmorate.repository.movie.MovieSqlConstants.*;
 import static ru.yandex.practicum.filmorate.repository.rating.RatingSqlConstants.*;
 
@@ -123,7 +123,6 @@ public class FilmDbStorage implements FilmServiceInterface {
         Map<Integer, Film> filmMap = films.stream()
                 .collect(Collectors.toMap(Film::getId, Function.identity()));
 
-
         jdbc.query(GET_MOVIES_WITH_GENRES_SQL, (rs) -> {
             int movieId = rs.getInt("movie_id");
             Film film = filmMap.get(movieId);
@@ -136,7 +135,6 @@ public class FilmDbStorage implements FilmServiceInterface {
                 }
             }
         });
-
 
         jdbc.query(GET_LIKES_SQL, (rs) -> {
             int movieId = rs.getInt("movie_id");
