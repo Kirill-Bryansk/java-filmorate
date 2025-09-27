@@ -1,16 +1,18 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.genre;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.repository.genre.GenreStorageInterface;
 
 import java.util.List;
 
 @Service
-public class GenreService {
-    private final GenreStorageInterface genreStorage;
+public class GenreService implements GenreServiceInterface {
 
-    public GenreService(GenreStorageInterface genreStorage) {
+    @Autowired
+    private final GenreServiceInterface genreStorage;
+
+    public GenreService(GenreServiceInterface genreStorage) {
         this.genreStorage = genreStorage;
     }
 
