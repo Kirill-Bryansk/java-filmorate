@@ -3,30 +3,32 @@ package ru.yandex.practicum.filmorate.service.users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.users.UserDbStorage;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserServiceInterface {
 
-    private final UserServiceInterface userStorage;
+    private final UserDbStorage userStorage;
 
+    @Override
     public User addUser(User user) {
         return userStorage.addUser(user);
     }
 
+    @Override
     public User updateUser(User user) {
         return userStorage.updateUser(user);
     }
 
+    @Override
     public User getUserById(int id) {
         return userStorage.getUserById(id);
     }
 
+    @Override
     public ArrayList<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
@@ -36,41 +38,12 @@ public class UserService implements UserServiceInterface {
         userStorage.deleteUser(id);
     }
 
-    public void addFriend(int userId, int friendId) {
-        validateUsersExist(userId, friendId);
-        userStorage.addFriend(userId, friendId);
-    }
-
-    public void removeFriend(int userId, int friendId) {
-        validateUsersExist(userId, friendId);
-        userStorage.removeFriend(userId, friendId);
-    }
-
     @Override
     public void deleteAllUsers() {
         userStorage.deleteAllUsers();
     }
 
-    public Set<User> getFriends(int userId) {
-        User user = userStorage.getUserById(userId);
-        return user.getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toSet());
-    }
-
-    public List<User> getCommonFriends(int userId1, int userId2) {
-        Set<Integer> user1Friends = userStorage.getUserById(userId1).getFriends();
-        Set<Integer> user2Friends = userStorage.getUserById(userId2).getFriends();
-        List<Integer> commonFriends = user1Friends.stream()
-                .filter(user2Friends::contains)
-                .toList();
-
-        return commonFriends.stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
-    }
-
-    private void validateUsersExist(int userId, int friendId) {
+    public void validateUsersExist(int userId, int friendId) {
         userStorage.getUserById(userId);
         userStorage.getUserById(friendId);
     }

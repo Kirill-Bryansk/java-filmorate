@@ -15,9 +15,7 @@ public interface UserServiceInterface {
 
     void deleteUser(int id);
 
-    void addFriend(int userId, int friendId);
-
-    void removeFriend(int userId, int friendId);
-
     void deleteAllUsers();
+
+    void validateUsersExist(int userId, int friendId);
 }

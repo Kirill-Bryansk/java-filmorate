@@ -10,14 +10,13 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.service.users.UserServiceInterface;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.repository.friendship.FriendshipSqlConstants.*;
 import static ru.yandex.practicum.filmorate.repository.users.UsersSqlConstants.*;
@@ -28,6 +27,7 @@ import static ru.yandex.practicum.filmorate.repository.users.UsersSqlConstants.*
 public class UserDbStorage implements UserServiceInterface {
 
     private final JdbcTemplate jdbc;
+    private final FriendshipDbStorage friendshipDbStorage;
 
     @Override
     public User addUser(User user) {
@@ -65,7 +65,7 @@ public class UserDbStorage implements UserServiceInterface {
         try {
             User user = jdbc.queryForObject(GET_USER_BY_ID_SQL, new UserRowMapper(), id);
 
-            for (User friend : getFriends(id)) {
+            for (User friend : friendshipDbStorage.getFriends(id)) {
                 user.getFriends().add(friend.getId());
             }
             return user;
@@ -92,26 +92,10 @@ public class UserDbStorage implements UserServiceInterface {
         jdbc.update(DELETE_ALL_USERS_SQL);
     }
 
-    public void addFriend(int userId, int friendId) {
-        try {
-            String status = jdbc.queryForObject(CHECK_FRIENDSHIP_STATUS_SQL, String.class, friendId, userId);
-
-            if ("PENDING".equals(status)) {
-                jdbc.update(UPDATE_FRIENDSHIP_STATUS_TO_CONFIRMED_SQL, friendId, userId);
-                jdbc.update(INSERT_MIRROR_FRIENDSHIP_SQL, userId, friendId);
-            }
-        } catch (EmptyResultDataAccessException e) {
-            jdbc.update(INSERT_NEW_FRIENDSHIP_REQUEST_SQL, userId, friendId);
-        }
-    }
-
-    public void removeFriend(int userId, int friendId) {
-        jdbc.update(DELETE_FRIENDSHIP_SQL, userId, friendId);
-        jdbc.update(UPDATE_FRIENDSHIP_STATUS_TO_CONFIRMED_SQL, friendId, userId);
-    }
-
-    public Set<User> getFriends(int userId) {
-        return new HashSet<>(jdbc.query(GET_FRIENDS_SQL, new UserRowMapper(), userId));
+    @Override
+    public void validateUsersExist(int userId, int friendId) {
+        getUserById(userId);
+        getUserById(friendId);
     }
 }
 
