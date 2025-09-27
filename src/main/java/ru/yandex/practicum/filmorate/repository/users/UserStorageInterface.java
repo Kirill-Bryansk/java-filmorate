@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.repository;
+package ru.yandex.practicum.filmorate.repository.users;
 
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 
-public interface UserStorage {
+public interface UserStorageInterface {
     User addUser(User user);
 
     User updateUser(User user);

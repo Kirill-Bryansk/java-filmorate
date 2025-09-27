@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository.jdbc;
+package ru.yandex.practicum.filmorate.repository.movie;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.repository.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -21,11 +20,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.repository.jdbc.constants.SqlConstants.*;
+import static ru.yandex.practicum.filmorate.repository.genre.GenreSqlConstants.*;
+import static ru.yandex.practicum.filmorate.repository.like.LikeSqlConstants.*;
+import static ru.yandex.practicum.filmorate.repository.movie.MovieGenreConstants.*;
+import static ru.yandex.practicum.filmorate.repository.movie.MovieSqlConstants.*;
+import static ru.yandex.practicum.filmorate.repository.rating.RatingSqlConstants.*;
 
 @Component
 @RequiredArgsConstructor
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbStorage implements FilmStorageInterface {
 
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
@@ -149,7 +152,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void deleteFilm(int id) {
         jdbc.update(DELETE_LIKES_BY_MOVIE_ID_SQL, id);
-        jdbc.update(DELETE_GENRES_BY_MOVIE_ID_SQL, id);
+        jdbc.update(DELETE_GENRES_SQL, id);
 
         int rowsAffected = jdbc.update(DELETE_MOVIE_BY_ID_SQL, id);
 
@@ -183,7 +186,7 @@ public class FilmDbStorage implements FilmStorage {
         Map<Integer, Film> filmMap = films.stream()
                 .collect(Collectors.toMap(Film::getId, Function.identity()));
 
-        jdbc.query(GET_GENRES_BY_MOVIE_ID_SQL, (rs) -> {
+        jdbc.query(GET_GENRES_SQL, (rs) -> {
             int movieId = rs.getInt("movie_id");
             Film film = filmMap.get(movieId);
             if (film != null) {
@@ -242,5 +245,4 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbc.batchUpdate(INSERT_INTO_MOVIE_GENRE_SQL, batchArgs);
     }
-
 }

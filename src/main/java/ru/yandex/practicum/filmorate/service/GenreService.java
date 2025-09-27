@@ -2,15 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.repository.GenreStorage;
+import ru.yandex.practicum.filmorate.repository.genre.GenreStorageInterface;
 
 import java.util.List;
 
 @Service
 public class GenreService {
-    private final GenreStorage genreStorage;
+    private final GenreStorageInterface genreStorage;
 
-    public GenreService(GenreStorage genreStorage) {
+    public GenreService(GenreStorageInterface genreStorage) {
         this.genreStorage = genreStorage;
     }
 

@@ -1,19 +1,19 @@
-package ru.yandex.practicum.filmorate.repository.jdbc;
+package ru.yandex.practicum.filmorate.repository.mpa;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.repository.MpaStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-@Component
-public class MpaDbStorage implements MpaStorage {
+import static ru.yandex.practicum.filmorate.repository.mpa.MpaSqlConstants.GET_ALL_MPA_SQL;
+import static ru.yandex.practicum.filmorate.repository.mpa.MpaSqlConstants.GET_MPA_BY_ID_SQL;
 
+@Component
+public class MpaDbStorage implements MpaStorageInterface {
     private final JdbcTemplate jdbc;
 
     public MpaDbStorage(JdbcTemplate jdbc) {
@@ -22,23 +22,15 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public List<Mpa> getAllMpa() {
-        String sql = "SELECT rating_id, name FROM rating";
-        return jdbc.query(sql, this::mapRowToMpa);
+        return jdbc.query(GET_ALL_MPA_SQL, new MpaRowMapper());
     }
 
     @Override
     public Mpa getMpaById(int id) {
-        String sql = "SELECT rating_id, name FROM rating WHERE rating_id = ?";
         try {
-            Mpa mpa = jdbc.queryForObject(sql, this::mapRowToMpa, id);
-            return mpa;
+            return jdbc.queryForObject(GET_MPA_BY_ID_SQL, new MpaRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Рейтинг с ID: " + id + " не найден");
         }
     }
-
-    private Mpa mapRowToMpa(ResultSet rs, int rowNum) throws SQLException {
-        return new Mpa(rs.getInt("rating_id"), rs.getString("name"));
-    }
 }
-

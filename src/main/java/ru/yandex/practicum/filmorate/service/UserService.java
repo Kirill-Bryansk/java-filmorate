@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.repository.UserStorage;
+import ru.yandex.practicum.filmorate.repository.users.UserStorageInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserStorageInterface userStorage;
 
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorageInterface userStorage) {
         this.userStorage = userStorage;
     }
 
