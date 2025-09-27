@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.repository.mpa;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.mpa.MpaServiceInterface;
 
 import java.util.List;
 
@@ -13,12 +15,9 @@ import static ru.yandex.practicum.filmorate.repository.mpa.MpaSqlConstants.GET_A
 import static ru.yandex.practicum.filmorate.repository.mpa.MpaSqlConstants.GET_MPA_BY_ID_SQL;
 
 @Component
-public class MpaDbStorage implements MpaStorageInterface {
+@RequiredArgsConstructor
+public class MpaDbStorage implements MpaServiceInterface {
     private final JdbcTemplate jdbc;
-
-    public MpaDbStorage(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
 
     @Override
     public List<Mpa> getAllMpa() {

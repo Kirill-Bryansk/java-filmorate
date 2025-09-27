@@ -12,9 +12,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class FilmService implements FilmServiceInterface {
-    @Autowired
     private final FilmServiceInterface filmStorage;
-    @Autowired // создает приватные поля
     private final UserStorageInterface userStorage;
 
     public ArrayList<Film> getAllFilms() {
