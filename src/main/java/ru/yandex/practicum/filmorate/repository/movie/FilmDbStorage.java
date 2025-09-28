@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository.movie;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -11,8 +10,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.repository.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.repository.rating.RatingDbStorage;
 import ru.yandex.practicum.filmorate.service.movie.FilmServiceInterface;
 
 import java.sql.Date;
@@ -34,6 +33,8 @@ public class FilmDbStorage implements FilmServiceInterface {
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
     private final GenreDbStorage genreDbStorage;
+    private final RatingDbStorage ratingDbStorage;
+
 
     @Override
     public Film addFilm(Film film) {
@@ -45,7 +46,7 @@ public class FilmDbStorage implements FilmServiceInterface {
             ps.setString(2, film.getDescription());
             ps.setDate(3, Date.valueOf(film.getReleaseDate()));
             ps.setLong(4, film.getDuration());
-            ps.setObject(5, getRatingIdIfExists(film.getMpa()));
+            ps.setObject(5, ratingDbStorage.getRatingIdIfExists(film.getMpa()));
             return ps;
         }, keyHolder);
 
@@ -56,9 +57,7 @@ public class FilmDbStorage implements FilmServiceInterface {
         }
         int filmId = key.intValue();
 
-        Set<Genre> sortedGenres = film.getGenres().stream()
-                .sorted(Comparator.comparing(Genre::getId))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<Genre> sortedGenres = film.getGenres().stream().sorted(Comparator.comparing(Genre::getId)).collect(Collectors.toCollection(LinkedHashSet::new));
 
         genreDbStorage.insertGenres(filmId, film.getGenres());
         film.setId(filmId);
@@ -73,16 +72,11 @@ public class FilmDbStorage implements FilmServiceInterface {
             throw new NotFoundException("Фильм с ID: " + film.getId() + " не найден");
         }
 
-        Integer ratingId = getRatingIdIfExists(film.getMpa());
 
-        jdbc.update(UPDATE_FILM_SQL,
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                ratingId,
-                film.getId()
-        );
+        Integer ratingId = ratingDbStorage.getRatingIdIfExists(film.getMpa());
+
+
+        jdbc.update(UPDATE_FILM_SQL, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), ratingId, film.getId());
 
         jdbc.update(DELETE_GENRES_SQL, film.getId());
 
@@ -118,12 +112,11 @@ public class FilmDbStorage implements FilmServiceInterface {
     }
 
     @Override
-    public ArrayList<Film> getAllFilms() {
+    public List<Film> getAllFilms() {
 
-        ArrayList<Film> films = new ArrayList<>(jdbc.query(GET_MOVIES_WITH_RATINGS_SQL, mapper));
+        List<Film> films = new ArrayList<>(jdbc.query(GET_MOVIES_WITH_RATINGS_SQL, mapper));
 
-        Map<Integer, Film> filmMap = films.stream()
-                .collect(Collectors.toMap(Film::getId, Function.identity()));
+        Map<Integer, Film> filmMap = films.stream().collect(Collectors.toMap(Film::getId, Function.identity()));
 
         jdbc.query(GET_MOVIES_WITH_GENRES_SQL, (rs) -> {
             int movieId = rs.getInt("movie_id");
@@ -167,72 +160,4 @@ public class FilmDbStorage implements FilmServiceInterface {
         jdbc.update(DELETE_ALL_GENRES_SQL);
         jdbc.update(DELETE_ALL_MOVIES_SQL);
     }
-
-    @Override
-    public List<Film> getPopularFilms(int count) {
-
-        List<Film> films = jdbc.query(GET_POPULAR_FILMS_SQL, mapper, count);
-
-        Map<Integer, Film> filmMap = films.stream()
-                .collect(Collectors.toMap(Film::getId, Function.identity()));
-
-        jdbc.query(GET_GENRES_SQL, (rs) -> {
-            int movieId = rs.getInt("movie_id");
-            Film film = filmMap.get(movieId);
-            if (film != null) {
-                Genre genre = new Genre(rs.getInt("genre_id"), rs.getString("name"));
-                film.getGenres().add(genre);
-            }
-        });
-
-        jdbc.query(GET_LIKES_SQL, (rs) -> {
-            int movieId = rs.getInt("movie_id");
-            Film film = filmMap.get(movieId);
-            if (film != null) {
-                film.getLikes().add(rs.getInt("user_id"));
-            }
-        });
-
-        return films;
-    }
-
-    /*private Integer getGenreIdIfExists(Genre genre) {
-        if (genre == null) return null;
-
-        try {
-
-            return jdbc.queryForObject(GET_GENRE_ID_SQL, Integer.class, genre.getId());
-        } catch (EmptyResultDataAccessException e) {
-            try {
-
-                return jdbc.queryForObject(GET_GENRE_ID_BY_NAME_SQL, Integer.class, genre.getName());
-            } catch (EmptyResultDataAccessException ex) {
-                throw new NotFoundException("Жанр '" + genre.getName() + "' не найден");
-            }
-        }
-    }*/
-
-    private Integer getRatingIdIfExists(Mpa mpa) {
-        if (mpa == null) return null;
-        try {
-            return jdbc.queryForObject(GET_RATING_ID_BY_ID_SQL, Integer.class, mpa.getId());
-        } catch (EmptyResultDataAccessException e) {
-            try {
-                return jdbc.queryForObject(GET_RATING_ID_BY_NAME_SQL, Integer.class, mpa.getName());
-            } catch (EmptyResultDataAccessException ex) {
-                throw new NotFoundException("Рейтинг '" + mpa.getName() + "' не найден");
-            }
-        }
-    }
-
-    /*private void insertGenres(int movieId, Set<Genre> genres) {
-        if (genres == null || genres.isEmpty()) return;
-
-        List<Object[]> batchArgs = genres.stream()
-                .sorted(Comparator.comparing(Genre::getId))
-                .map(genre -> new Object[]{movieId, getGenreIdIfExists(genre)})
-                .collect(Collectors.toList());
-
-        jdbc.batchUpdate(INSERT_INTO_MOVIE_GENRE_SQL, batchArgs);
-    }*/
 }
