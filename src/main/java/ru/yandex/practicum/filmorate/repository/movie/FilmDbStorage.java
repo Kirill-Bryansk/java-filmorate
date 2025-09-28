@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.repository.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.service.movie.FilmServiceInterface;
 
 import java.sql.Date;
@@ -32,6 +33,7 @@ import static ru.yandex.practicum.filmorate.repository.rating.RatingSqlConstants
 public class FilmDbStorage implements FilmServiceInterface {
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
+    private final GenreDbStorage genreDbStorage;
 
     @Override
     public Film addFilm(Film film) {
@@ -58,7 +60,7 @@ public class FilmDbStorage implements FilmServiceInterface {
                 .sorted(Comparator.comparing(Genre::getId))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        insertGenres(filmId, film.getGenres());
+        genreDbStorage.insertGenres(filmId, film.getGenres());
         film.setId(filmId);
         film.setGenres(sortedGenres);
         return film;
@@ -84,7 +86,7 @@ public class FilmDbStorage implements FilmServiceInterface {
 
         jdbc.update(DELETE_GENRES_SQL, film.getId());
 
-        insertGenres(film.getId(), film.getGenres());
+        genreDbStorage.insertGenres(film.getId(), film.getGenres());
 
         return getFilmById(film.getId());
     }
@@ -194,7 +196,7 @@ public class FilmDbStorage implements FilmServiceInterface {
         return films;
     }
 
-    private Integer getGenreIdIfExists(Genre genre) {
+    /*private Integer getGenreIdIfExists(Genre genre) {
         if (genre == null) return null;
 
         try {
@@ -208,7 +210,7 @@ public class FilmDbStorage implements FilmServiceInterface {
                 throw new NotFoundException("Жанр '" + genre.getName() + "' не найден");
             }
         }
-    }
+    }*/
 
     private Integer getRatingIdIfExists(Mpa mpa) {
         if (mpa == null) return null;
@@ -223,7 +225,7 @@ public class FilmDbStorage implements FilmServiceInterface {
         }
     }
 
-    private void insertGenres(int movieId, Set<Genre> genres) {
+    /*private void insertGenres(int movieId, Set<Genre> genres) {
         if (genres == null || genres.isEmpty()) return;
 
         List<Object[]> batchArgs = genres.stream()
@@ -232,5 +234,5 @@ public class FilmDbStorage implements FilmServiceInterface {
                 .collect(Collectors.toList());
 
         jdbc.batchUpdate(INSERT_INTO_MOVIE_GENRE_SQL, batchArgs);
-    }
+    }*/
 }
